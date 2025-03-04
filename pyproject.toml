@@ -10,6 +10,7 @@ classifiers = [
 ]
 authors = [
     { name = "Mikko Marttila", email = "mikkmart@protonmail.com" },
+    { name = "sxl613", email = "" }
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -18,8 +19,8 @@ dependencies = [
 ]
 
 [project.urls]
-Source = "https://github.com/mikmart/pdfnumbering"
-Issues = "https://github.com/mikmart/pdfnumbering/issues"
+Source = "https://github.com/sxl613/pdfnumbering"
+Issues = "https://github.com/sxl613/pdfnumbering/issues"
 
 [project.optional-dependencies]
 dev = ["pdfnumbering[test, lint]"]

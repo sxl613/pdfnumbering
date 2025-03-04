@@ -12,10 +12,10 @@ Install the published version from [PyPI](https://pypi.org/project/pdfnumbering/
 python -m pip install pdfnumbering
 ```
 
-Or the development version from [GitHub](https://github.com/mikmart/pdfnumbering):
+Or the development version from [GitHub](https://github.com/sxl613/pdfnumbering):
 
 ```sh
-python -m pip install git+https://github.com/mikmart/pdfnumbering.git
+python -m pip install git+https://github.com/sxl613/pdfnumbering.git
 ```
 
 ## Usage
