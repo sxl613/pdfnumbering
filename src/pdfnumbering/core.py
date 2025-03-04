@@ -15,12 +15,12 @@ class PdfNumberer:
     ignore_pages: Container[int] = ()
     skip_pages: Container[int] = ()
     stamp_format: str = "{}"
-    font_size: int = 32
+    font_size: int = 12
     font_family: str = "Helvetica"
-    text_color: tuple[int, int, int] = (255, 0, 0)
-    text_align: str | Align = Align.L
+    text_color: tuple[int, int, int] = (0, 0, 0)  # Default: black
+    text_align: str | Align = Align.C
     text_position: tuple[int, int] = (0, 0)
-    page_margin: tuple[int, int] = (28, 28)
+    page_margin: tuple[int, int] = (10, 10)
 
     def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """

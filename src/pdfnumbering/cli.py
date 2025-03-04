@@ -1,14 +1,15 @@
 """
 Command line interface to the package.
 """
+
 import argparse
 import sys
 
 import pypdf
 
-from . import __version__
-from .color import hex2rgb
-from .core import Align, PdfNumberer
+from pdfnumbering import __version__
+from pdfnumbering.color import hex2rgb
+from pdfnumbering.core import Align, PdfNumberer
 
 
 def create_parser():
@@ -59,7 +60,7 @@ def create_parser():
     styling.add_argument(
         "--font-size",
         metavar="PT",
-        default=32,
+        default=12,
         type=int,
         help="font size in points (default: %(default)s)",
     )
@@ -72,14 +73,14 @@ def create_parser():
     styling.add_argument(
         "--text-color",
         metavar="HEX",
-        default="#ff0000",
+        default="#000000",
         help="hexadecimal color code (default: %(default)s)",
     )
 
     placement = parser.add_argument_group("placement options")
     placement.add_argument(
         "--text-align",
-        default="left",
+        default="center",
         choices=("left", "center", "right"),
         help="horizontal alignment of page numbers (default: %(default)s)",
     )
@@ -87,8 +88,15 @@ def create_parser():
         "--text-position",
         metavar=("X", "Y"),
         nargs=2,
-        default=(0, 0),
+        default=(-1, -1),
         type=int,
+        help="position of page numbers, in points (default: 0 0)",
+    )
+    placement.add_argument(
+        "--position",
+        default="",
+        choices=("bc", "br", "tr", "tc"),
+        type=str,
         help="position of page numbers, in points (default: 0 0)",
     )
     placement.add_argument(
@@ -134,11 +142,23 @@ def process_args(args) -> tuple[argparse.Namespace, str | None]:
 
     # Adapt vertical margins to font size by default
     if args.page_margin is None:
-        args.page_margin = (28, 28 + args.font_size // 2)
+        args.page_margin = (10, 10 + args.font_size // 2)
 
     # Convert pages from 1-based to 0-based indexing
     args.ignore_pages = [page - 1 for page in args.ignore_pages]
     args.skip_pages = [page - 1 for page in args.skip_pages]
+
+    # If position is specified it shall take priority over the (x, y)
+    # positioning and text alignment
+    if args.position == "bc":
+        args.text_position = (0, -1)
+    elif args.position == "br":
+        args.text_position = (-1, -1)
+    elif args.position == "tc":
+        args.text_position = (0, 1)
+    elif args.position == "tr":
+        args.text_position = (1, 1)
+        args.text_align = Align.R
 
     return args, None
 
