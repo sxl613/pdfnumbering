@@ -20,7 +20,7 @@ class PdfNumberer:
     text_color: tuple[int, int, int] = (0, 0, 0)  # Default: black
     text_align: str | Align = Align.C
     text_position: tuple[int, int] = (0, 0)
-    page_margin: tuple[int, int] = (10, 10)
+    page_margin: tuple[int, int] = (20, 20)
 
     def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """
@@ -74,8 +74,11 @@ class PdfNumberer:
         def with_margin(position, margin):
             return position + math.copysign(margin, position)
 
-        pdf.set_y(with_margin(self.text_position[1], self.page_margin[1]))
-        pdf.set_x(with_margin(self.text_position[0], self.page_margin[0]))
+        x: int = self.text_position[0]
+        y: int = self.text_position[1]
+
+        pdf.set_y(with_margin(y, self.page_margin[1]))
+        pdf.set_x(with_margin(x, self.page_margin[0]))
 
         # Write stamp text, vertically centered
         pdf.cell(0, 0, text, align=self.text_align)

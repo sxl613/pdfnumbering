@@ -3,7 +3,9 @@ Command line interface to the package.
 """
 
 import argparse
+import shutil
 import sys
+import tempfile
 
 import pypdf
 
@@ -95,7 +97,7 @@ def create_parser():
     placement.add_argument(
         "--position",
         default="",
-        choices=("bc", "br", "tr", "tc"),
+        choices=("bc", "bl", "br", "tr", "tc", "tl"),
         type=str,
         help="position of page numbers, in points (default: 0 0)",
     )
@@ -110,7 +112,8 @@ def create_parser():
     parser.add_argument(
         "-o",
         "--output",
-        type=argparse.FileType("wb"),
+        type=str,
+        default="",
         help="destination to write output to",
     )
     parser.add_argument(
@@ -152,13 +155,25 @@ def process_args(args) -> tuple[argparse.Namespace, str | None]:
     # positioning and text alignment
     if args.position == "bc":
         args.text_position = (0, -1)
+        args.text_align = Align.C
     elif args.position == "br":
         args.text_position = (-1, -1)
-    elif args.position == "tc":
-        args.text_position = (0, 1)
-    elif args.position == "tr":
-        args.text_position = (1, 1)
         args.text_align = Align.R
+    elif args.position == "bl":
+        args.text_position = (0, -1)
+        args.text_align = Align.L
+    elif args.position == "tc":
+        args.text_position = (0.49, 0.99)
+    elif args.position == "tr":
+        args.text_position = (0.99, 0.99)
+        args.text_align = Align.R
+    elif args.position == "tl":
+        args.text_position = (0, 0.99)
+        args.text_align = Align.L
+    else:
+        # Default to bottom center
+        args.text_position = (0, -1)
+        args.text_align = Align.C
 
     return args, None
 
@@ -188,7 +203,19 @@ def main():
 
     document = pypdf.PdfWriter(clone_from=args.file)
     numberer.add_page_numbering(document.pages)
-    document.write(args.output or sys.stdout.buffer)
+    # support paginating in-place
+    if not args.output:
+        args.output = sys.stdout.buffer
+    elif args.output == args.file.name:
+        with tempfile.NamedTemporaryFile("wb") as tmp:
+            print(f"{tmp.name}")
+            document.write(tmp)
+            shutil.copyfile(tmp.name, args.output)
+    else:
+        with open(args.output, "wb") as out:
+            document.write(out)
+
+        document.write(args.output or sys.stdout.buffer)
 
 
 if __name__ == "__main__":
